@@ -7,6 +7,8 @@ import CartPage from "./components/CartPage";
 import StorePage from "./components/StorePage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
@@ -18,19 +20,21 @@ function App() {
         <Link to="/cart" style={{marginRight: "1rem"}}>Cart</Link>
         <Link to="/login" style={{marginRight: "1rem"}}>Login</Link>
         <Link to="/register">Register</Link>
+        
       </nav>
 
       <Routes>
         <Route path="/" element={<Navigate to="/products" />} />
         <Route path="/upload" element={<ProductForm />} />
         <Route path="/products" element={<StorePage />} />
-        <Route path="/products" element={<ProductList />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route path="/register" element={<Register />} />
+        
         
       </Routes>
+      <ToastContainer position="top-center" autoClose={3000} />
     </Router>
   );
 }

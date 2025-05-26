@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from .models import Products, Category, Cart, CartItem, Order, OrderItem,User
+from .models import Products, Category, Cart, CartItem, Order, OrderItem
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -31,7 +31,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ['id','user','items', 'created_at']
+        fields = ['id','items', 'created_at']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

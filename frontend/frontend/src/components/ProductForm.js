@@ -55,7 +55,7 @@ const ProductForm = ({ refreshProducts }) => {
                 image: null,
             });
             if (refreshProducts) {
-                await refreshProducts(); // ✅ Refresh the product list
+                await refreshProducts(); //  Refresh the product list
             }
         } catch (err) {
             alert('❌ Failed to upload product');
@@ -66,7 +66,7 @@ const ProductForm = ({ refreshProducts }) => {
         <form className="product-form" onSubmit={handleSubmit} encType="multipart/form-data">
             <input type="text" name="name" placeholder="Name" value={productData.name} onChange={handleChange} required />
             <input type="text" name="description" placeholder="Description" value={productData.description} onChange={handleChange} />
-            <input type="number" name="price" placeholder="Price" value={productData.price} onChange={handleChange} />
+            <input type="number" name="price" placeholder="Price in Dolars" value={productData.price} onChange={handleChange} />
             <input type="number" name="stock" placeholder="Stock" value={productData.stock} onChange={handleChange} />
             <input type="text" name="size" placeholder="Size" value={productData.size} onChange={handleChange} />
             <input type="text" name="color" placeholder="Color" value={productData.color} onChange={handleChange} />

@@ -2,6 +2,9 @@ import React, {useEffect, useState, useContext} from "react";
 import { useParams } from "react-router-dom";
 import { CartContext } from "../CartContext";
 import './ProductDetail.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 //Check if the user is authenticated by checking the localstorage
 const isAuthenticated = () =>{
     return !!(localStorage.getItem("access_token"));
@@ -26,7 +29,6 @@ const ProductDetail = () => {
         <div className="product-detail-container" style={{padding: '2rem'}}>
             <h1>{product.name}</h1>
             <img className="product-detail-image" src={product.image} alt={product.name} style={{width: '300px', borderRadius: '10px'}}></img>
-            <p><strong>Category:</strong>{product.category_detail?.name}</p>
             <p><strong>Description:</strong>{product.description}</p>
             <p><strong>Price:</strong>${product.price}</p>
             <p><strong>Stock:</strong>{product.stock}</p>
@@ -35,8 +37,9 @@ const ProductDetail = () => {
             onClick={() =>{
                 if (isAuthenticated()){
                     addToCart(product);
+                    toast.success("Item added to cart!");
                 } else {
-                    alert("Please login to add items in your cart")
+                    toast.error("Please login to add items to your cart.");
                 }
             }}
             >
@@ -48,6 +51,7 @@ const ProductDetail = () => {
 
 
             </button>
+            <ToastContainer position="top-center" autoClose={3000} />
 
         </div>
     );
