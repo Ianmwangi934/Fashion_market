@@ -11,7 +11,7 @@ const Login = () =>{
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const {fechCartItems} = useContext(CartContext);
+    const {fetchCartItems} = useContext(CartContext);
     const navigate = useNavigate();
     useEffect(() => {
         // Apply dark class to body
@@ -25,13 +25,19 @@ const Login = () =>{
 
     const handleLogin = async (e) =>{
         e.preventDefault();
-        try {
+        setError(""); //clear any existing error
+        try{
             await loginUser(username, password);
-            await fechCartItems();
-            navigate("/") //Redirects the user to specified route(in this case /)
 
-        }catch(err){
-            setError("Invalid username or password");
+            try{
+                await fetchCartItems();
+            }catch(cartErr) {
+                console.warn("Cart fetch failed", cartErr);
+            }
+            navigate("/"); // Redirect the user to home page after success login
+        }catch(err) {
+            console.error("Login failed:", err);
+            setError("Invalid Username or password");
         }
         
     
@@ -67,7 +73,7 @@ const Login = () =>{
             onChange={(e)=>setPassword(e.target.value)}
             required
             />
-            <button type="submit">Login</button>
+            <button type="submit" className="Loginbtn">Login</button>
             
            
         </form>

@@ -1,7 +1,19 @@
 from rest_framework import serializers 
-from .models import Products, Category, Cart, CartItem, Order, OrderItem
+from .models import Products, Category, Cart, CartItem, Order, OrderItem,ShippingAddress
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+
+class ShippingAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = '__all__'
+        read_only_fields = ['user']
+
+    def validate_phone(self,value):
+        if len(value) < 10:
+            raise serializers.ValidationError("Please input a valid phone number")
+        return value
+
 
 class CategorySerializer(serializers.ModelSerializer):
     
@@ -27,7 +39,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = ['cart', 'product', 'quantity']
 
 class CartSerializer(serializers.ModelSerializer):
-    items = CartItemSerializer(source='cartitem_set', many=True, read_only=True)
+    items = CartItemSerializer(source='cart_items', many=True, read_only=True)
 
     class Meta:
         model = Cart
@@ -42,11 +54,44 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'order', 'product', 'quantity', 'price']
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(source='orderitem_set', many=True, read_only=True)
+    items_ordered = OrderItemSerializer(source='items', many=True, read_only=True)
+    shipping_address = ShippingAddressSerializer(write_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order_date', 'shipping_address', 'status', 'items']
+        fields = ['id', 'user', 'order_date', 'shipping_address', 'status', 'items_ordered']
+        read_only_fields = ['id', 'user','order_date', 'status', 'items_ordered' ]
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        shipping_data = validated_data.pop('shipping_address')
+        shipping_address = ShippingAddress.objects.create(user=user, **shipping_data)
+        cart_items = CartItem.objects.select_related('product').filter(cart__user=user)
+
+        if not cart_items.exists():
+            raise serializers.ValidationError("Cart is empty")
+
+        order = Order.objects.create(user=user, shipping_address=shipping_address, status="pending")
+
+        for item in cart_items:
+            product = item.product
+            if product.stock < item.quantity:
+                raise serializers.ValidationError(f"Insufficient stock for {product.name}")
+
+            OrderItem.objects.create(
+                order = order,
+                product = product,
+                quantity = item.quantity,
+                price = product.price
+            )
+
+            product.stock -= item.quantity
+            product.save()
+
+        cart_items.delete()
+        return order 
+        
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -70,4 +115,5 @@ class RegisterSerializer(serializers.ModelSerializer):
             "access": str(refresh.access_token),
             "refresh":str(refresh),
         }
+
 

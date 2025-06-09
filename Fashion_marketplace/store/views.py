@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions
-from .models import Products,Category,Cart,CartItem
-from .serializers import ProductsSerializer,CategorySerializer,CartSerializer,RegisterSerializer,User
+from .models import Products,Category,Cart,CartItem,ShippingAddress,Order
+from .serializers import ProductsSerializer,CategorySerializer,CartSerializer,RegisterSerializer,ShippingAddressSerializer,OrderSerializer
+from django.contrib.auth.models import User
 from rest_framework.generics import ListAPIView
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView,CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
 
@@ -16,19 +17,24 @@ class ProductsCreateAPIView(generics.CreateAPIView):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
     permission_classes = [permissions.AllowAny]
+    
 
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
+    
 
 class ProductsListAPIView(generics.ListAPIView):
     queryset = Products.objects.all().order_by('date_uploaded')
     serializer_class = ProductsSerializer
+    permission_classes = [permissions.AllowAny]
 
 class ProductsDetailAPIView(RetrieveAPIView):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
     lookup_field = 'id'
+    permission_classes = [permissions.AllowAny]
 
 class CartView(APIView):
     permission_classes = [permissions.IsAuthenticated] #only JWT authenticated user
@@ -37,6 +43,8 @@ class CartView(APIView):
         cart, created = Cart.objects.get_or_create(user=request.user)
         serializer = CartSerializer(cart)
         return Response(serializer.data)
+
+        
 
 
 class AddToCartView(APIView):
@@ -59,6 +67,36 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.AllowAny] #Allow any user to access the Registration view and create an account
     serializer_class = RegisterSerializer
+
+class ShippingAddressView(generics.CreateAPIView):
+    serializer_class = ShippingAddressSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    
+
+class CreateOrderView(CreateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        order_id = response.data.get("id")
+        return Response({"message": "Order created","id": order_id})
+
+class UserOrderView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    
+
+    def get_queryset(self):
+        qs = Order.objects.filter(user=self.request.user)
+        return qs
 
 
 
