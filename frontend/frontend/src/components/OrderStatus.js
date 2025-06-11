@@ -1,13 +1,14 @@
 import React, {useEffect,useState} from "react";
 import { useParams } from "react-router-dom";
 import './OrderStatus.css';
+import { useNavigate } from "react-router-dom";
 
 
 
 const OrderStatus = () =>{
     const {id} = useParams();
     const [order, setOrder] = useState();
-     
+    const navigate = useNavigate(); 
 
     useEffect(()=>{
       if (!id) {
@@ -67,6 +68,9 @@ const OrderStatus = () =>{
     );
   })}
       </ul>
+      <button 
+      onClick={() => navigate(`/checkout/${order.id}`)}
+      >Proceed to Checkout</button>
     </div>
       );
 };

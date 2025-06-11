@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from rest_framework import generics, permissions
 from .models import Products,Category,Cart,CartItem,ShippingAddress,Order
-from .serializers import ProductsSerializer,CategorySerializer,CartSerializer,RegisterSerializer,ShippingAddressSerializer,OrderSerializer
+from .serializers import ProductsSerializer,CategorySerializer,CartSerializer,RegisterSerializer,ShippingAddressSerializer,OrderSerializer,OrderCheckoutSerializer
 from django.contrib.auth.models import User
 from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView,CreateAPIView
@@ -9,7 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 
 
 # Create your views here.
@@ -98,8 +99,13 @@ class UserOrderView(generics.RetrieveAPIView):
         qs = Order.objects.filter(user=self.request.user)
         return qs
 
+class OrderCheckoutView(APIView):
+    permission_classes = [IsAuthenticated]
 
-
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id, user= request.user)
+        serializer = OrderCheckoutSerializer(order)
+        return Response(serializer.data)
 
 
 

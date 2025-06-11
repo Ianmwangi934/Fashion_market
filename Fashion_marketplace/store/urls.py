@@ -9,7 +9,8 @@ from .views import (
     RegisterView,
     ShippingAddressView,
     CreateOrderView,
-    UserOrderView
+    UserOrderView,
+    OrderCheckoutView
 )
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
 
@@ -25,5 +26,6 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name = 'token-refresh'),
     path('shipping-address/',ShippingAddressView.as_view(), name='shipping-address'),
     path('orders/create/', CreateOrderView.as_view(), name='create-order'),
-    path('order/<int:id>/',UserOrderView.as_view(), name='user-orders')
+    path('order/<int:id>/',UserOrderView.as_view(), name='user-orders'),
+    path('checkout/<int:order_id>/', OrderCheckoutView.as_view(), name='order-checkout')
 ]

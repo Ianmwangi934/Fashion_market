@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ShippingForm from "./components/ShippingForm";
 import PlaceORder from "./components/PlaceOrder";
 import OrderStatus from "./components/OrderStatus";
+import OrderCheckout from "./components/OrderCheckout";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Link to="/shipping" style={{marginRight: "1rem"}}>Shipping Information</Link>
         <Link to="/placeorder" style={{marginRight: "1rem"}}>Place Order</Link>
         <Link to="/order-status" style={{marginRight: "1rem"}}>Order status</Link>
+        <Link to="/checkout/" style={{marginRight:"1rem"}}>Checkout</Link>
         <Link to="/login" style={{marginRight: "1rem"}}>Login</Link>
         <Link to="/register">Register</Link>
         
@@ -40,6 +42,7 @@ function App() {
         <Route path="/shipping" element={<ShippingForm  />} />
         <Route path="/placeorder" element={<PlaceORder />} />
         <Route path="/order-status/:id" element={<OrderStatus />} />
+        <Route path="/checkout/:orderId" element={<OrderCheckout />} />
         
         
       </Routes>

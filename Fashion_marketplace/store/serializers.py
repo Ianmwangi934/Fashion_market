@@ -59,8 +59,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order_date', 'shipping_address', 'status', 'items_ordered']
-        read_only_fields = ['id', 'user','order_date', 'status', 'items_ordered' ]
+        fields = ['id', 'user', 'order_date', 'shipping_address', 'status','items','items_ordered' ]
+        read_only_fields = ['id', 'user','order_date', 'status','items','items_ordered' ]
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -115,5 +115,17 @@ class RegisterSerializer(serializers.ModelSerializer):
             "access": str(refresh.access_token),
             "refresh":str(refresh),
         }
+
+class OrderCheckoutSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True )
+    total = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'order_date', 'shipping_address', 'status','items','total','items_ordered']
+
+    def get_total(self, obj):
+        items_ordered  = OrderItem.objects.filter(order=obj)
+        return sum(item.quantity * item.price for item in items_ordered)
 
 
