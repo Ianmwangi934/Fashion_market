@@ -58,8 +58,10 @@ class AddToCartView(APIView):
         cart, created = Cart.objects.get_or_create(user=request.user)
         product = Products.objects.get(id=products_id)
         item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-
-        item.quantity +=quantity
+        if created:
+            item.quantity = quantity
+        else:
+            item.quantity +=quantity
         item.save()
 
         return Response({"message":"Added to cart"})
@@ -83,11 +85,12 @@ class CreateOrderView(CreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
+    def orders(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         order_id = response.data.get("id")
         return Response({"message": "Order created","id": order_id})
 
+        
 class UserOrderView(generics.RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

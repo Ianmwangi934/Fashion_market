@@ -23,6 +23,7 @@ const OrderCheckout = () =>{
                     }
                 });
                 setOrder(response.data);
+                console.log(response.data)
             } catch (err) {
                 console.error(err);
                 setError("Failed to fetch order details");

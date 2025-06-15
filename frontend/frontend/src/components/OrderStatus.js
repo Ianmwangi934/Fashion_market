@@ -47,7 +47,7 @@ const OrderStatus = () =>{
       <p><strong>Status:</strong> {order.status}</p>
       <p><strong>Items:</strong></p>
       <ul className="order-items-list">
-      {order.items_ordered.map((item, index) => {
+      {order.items.map((item, index) => {
     const imageUrl = item.product.image?.startsWith("http")
       ? item.product.image
       : `http://127.0.0.1:8000${item.product.image}`;

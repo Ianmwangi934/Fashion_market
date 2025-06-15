@@ -54,13 +54,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'order', 'product', 'quantity', 'price']
 
 class OrderSerializer(serializers.ModelSerializer):
-    items_ordered = OrderItemSerializer(source='items', many=True, read_only=True)
-    shipping_address = ShippingAddressSerializer(write_only=True)
+    items = OrderItemSerializer( many=True, read_only=True)
+    shipping_address = ShippingAddressSerializer(write_only=False)
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order_date', 'shipping_address', 'status','items','items_ordered' ]
-        read_only_fields = ['id', 'user','order_date', 'status','items','items_ordered' ]
+        fields = ['id', 'user', 'order_date', 'shipping_address', 'status','items' ]
+        read_only_fields = ['id', 'user','order_date', 'status','items' ]
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -122,10 +122,10 @@ class OrderCheckoutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order_date', 'shipping_address', 'status','items','total','items_ordered']
+        fields = ['id', 'user', 'order_date', 'shipping_address', 'status','items','total']
 
     def get_total(self, obj):
-        items_ordered  = OrderItem.objects.filter(order=obj)
-        return sum(item.quantity * item.price for item in items_ordered)
+        
+        return sum(item.quantity * item.price for item in obj.items.all())
 
 

@@ -42,7 +42,7 @@ class Products(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    items = models.CharField(max_length=100, blank=True,null=True)
+    #items = models.CharField(max_length=100, blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
 
@@ -67,7 +67,7 @@ class Order(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    items_ordered = models.ManyToManyField(CartItem, blank=True)
+    
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username}"
