@@ -2,6 +2,9 @@ from rest_framework import serializers
 from .models import Products, Category, Cart, CartItem, Order, OrderItem,ShippingAddress
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.mail import send_mail
+from django.conf import settings
+from .utils import send_sms
 
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -89,7 +92,18 @@ class OrderSerializer(serializers.ModelSerializer):
             product.save()
 
         cart_items.delete()
+        send_mail(
+            subject='Order Confirmation',
+            message=f"Thank you {user.username} for your order, \n\nWe will deliver to: {shipping_address.address}, {shipping_address.city}.\n\nStatus: {order.status}'",
+            from_email=settings.DEFAULT_FROM_EMAIL, 
+            recipient_list=False
+          )
+          #Send SMS
+        #phone = shipping_address.phone
+        #message = f"Thank you {user.username} for your order, \n\nWe will deliver to: {shipping_address.address}, {shipping_address.city}.\n\nStatus: {order.status}'"
+        #send_sms(phone,message)
         return order 
+
         
 
 

@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -137,7 +139,18 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'ianmurigu4@gmail.com'
+EMAIL_HOST_PASSWORD = 'Mwangi$6cs4lv'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+load_dotenv()
+VONAGE_API_KEY = os.getenv("VONAGE_API_KEY")
+VONAGE_API_SERECT_KEY = os.getenv("VONAGE_API_SERECT_KEY")
+VONAGE_VIRTUAL_NUMBER = os.getenv("VONAGE_VIRTUAL_NUMBER")
 
 
 # Default primary key field type
